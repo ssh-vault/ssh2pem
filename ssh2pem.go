@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
+	"os/exec"
 	"strings"
 )
 
@@ -93,11 +94,26 @@ func DecodePublicKey(str string) (interface{}, error) {
 	return pubKey, nil
 }
 
-// GetPem convert ssh-rsa public key to pem PKCS8
+// GetPem return ssh-rsa public key in PEM PKCS8
 func GetPem(key string) ([]byte, error) {
 	bytes, err := ioutil.ReadFile(key)
 	if err != nil {
 		return nil, err
+	}
+
+	// check if ssh key is the private key
+	// TODO find a way of doing this not depending on ssh-keygen
+	block, r := pem.Decode(bytes)
+	if len(r) == 0 {
+		if block.Type == "RSA PRIVATE KEY" {
+			out, err := exec.Command("ssh-keygen",
+				"-f",
+				key,
+				"-e",
+				"-m",
+				"PKCS8").Output()
+			return out, err
+		}
 	}
 
 	pubKey, err := DecodePublicKey(string(bytes))
