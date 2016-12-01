@@ -1,4 +1,4 @@
-// +build !windows
+// +build windows
 
 package ssh2pem
 
@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math/big"
-	"os/exec"
 	"strings"
 )
 
@@ -101,21 +100,6 @@ func GetPem(key string) ([]byte, error) {
 	bytes, err := ioutil.ReadFile(key)
 	if err != nil {
 		return nil, err
-	}
-
-	// check if ssh key is the private key
-	// TODO find a way of doing this not depending on ssh-keygen
-	block, r := pem.Decode(bytes)
-	if len(r) == 0 {
-		if block.Type == "RSA PRIVATE KEY" {
-			out, err := exec.Command("ssh-keygen",
-				"-f",
-				key,
-				"-e",
-				"-m",
-				"PKCS8").Output()
-			return out, err
-		}
 	}
 
 	pubKey, err := DecodePublicKey(string(bytes))
