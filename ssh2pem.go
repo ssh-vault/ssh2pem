@@ -118,7 +118,7 @@ func GetPem(key string) ([]byte, error) {
 
 	pubKey, err := DecodePublicKey(string(bytes))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Use a public ssh key: %s", err)
 	}
 
 	pkix, err := x509.MarshalPKIXPublicKey(pubKey)
