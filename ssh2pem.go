@@ -116,7 +116,16 @@ func GetPem(key string) ([]byte, error) {
 		}
 	}
 
-	pubKey, err := DecodePublicKey(string(bytes))
+	pubKey, err := GetPublicKeyPem(string(bytes))
+	if err != nil {
+		return nil, err
+	}
+	return pubKey, nil
+}
+
+// GetPublicKeyPem return the public key in PEM PKCS8
+func GetPublicKeyPem(key string) ([]byte, error) {
+	pubKey, err := DecodePublicKey(key)
 	if err != nil {
 		return nil, fmt.Errorf("Use a public ssh key: %s", err)
 	}
