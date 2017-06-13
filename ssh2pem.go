@@ -9,7 +9,6 @@ import (
 	"encoding/binary"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/big"
 	"os"
@@ -100,7 +99,6 @@ func DecodePublicKey(str string) (interface{}, error) {
 // GetPem return ssh-rsa public key in PEM PKCS8
 func GetPem(key string) ([]byte, error) {
 	f, err := os.Open(key)
-	bytes, err := ioutil.ReadFile(key)
 	if err != nil {
 		log.Fatal(err)
 	}
