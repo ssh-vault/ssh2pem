@@ -1,6 +1,7 @@
 package ssh2pem
 
 import (
+	"bufio"
 	"bytes"
 	"crypto/rsa"
 	"crypto/x509"
@@ -9,7 +10,9 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"math/big"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -96,14 +99,23 @@ func DecodePublicKey(str string) (interface{}, error) {
 
 // GetPem return ssh-rsa public key in PEM PKCS8
 func GetPem(key string) ([]byte, error) {
+	f, err := os.Open(key)
 	bytes, err := ioutil.ReadFile(key)
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
+	}
+	defer f.Close()
+	var b bytes.Buffer
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		if len(bytes.TrimSpace(scanner.Bytes())) > 0 {
+			b.WriteString(fmt.Sprintf("%s\n", scanner.Text()))
+		}
 	}
 
 	// check if ssh key is the private key
 	// TODO find a way of doing this not depending on ssh-keygen
-	block, r := pem.Decode(bytes)
+	block, r := pem.Decode(b.Bytes())
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
 			out, err := exec.Command("ssh-keygen",
