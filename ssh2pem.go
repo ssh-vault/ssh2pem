@@ -125,7 +125,7 @@ func GetPem(key string) ([]byte, error) {
 				"-e",
 				"-m",
 				"PKCS8").Output()
-			return out, err
+			return out, fmt.Errorf("Verify private key permissions, try chmod 0400 %s, %s", key, err)
 		}
 	}
 
