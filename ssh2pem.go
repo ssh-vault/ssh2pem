@@ -105,7 +105,10 @@ func GetPem(key string) ([]byte, error) {
 		log.Fatal(err)
 	}
 	defer f.Close()
+
 	var b bytes.Buffer
+
+	// remove empty lines from file
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if len(bytes.TrimSpace(scanner.Bytes())) > 0 {
@@ -128,7 +131,7 @@ func GetPem(key string) ([]byte, error) {
 		}
 	}
 
-	pubKey, err := GetPublicKeyPem(string(bytes))
+	pubKey, err := GetPublicKeyPem(b.String())
 	if err != nil {
 		return nil, err
 	}
