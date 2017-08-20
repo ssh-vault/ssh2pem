@@ -120,7 +120,7 @@ func GetPem(key string) ([]byte, error) {
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
 			out, err := exec.Command("ssh-keygen",
-				"-f",
+				"-yf",
 				key,
 				"-e",
 				"-m",
