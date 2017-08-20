@@ -9,6 +9,7 @@ import (
 	"encoding/binary"
 	"encoding/pem"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math/big"
 	"os"
@@ -119,9 +120,20 @@ func GetPem(key string) ([]byte, error) {
 	block, r := pem.Decode(b.Bytes())
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
+			tmpKey, err := ioutil.TempFile("", "")
+			if err != nil {
+				log.Fatal(err)
+			}
+			defer os.Remove(tmpKey.Name())
+			if _, err := tmpKey.Write(b.Bytes()); err != nil {
+				log.Fatal(err)
+			}
+			if err := tmpKey.Close(); err != nil {
+				log.Fatal(err)
+			}
 			out, err := exec.Command("ssh-keygen",
 				"-yf",
-				key,
+				tmpKey.Name(),
 				"-e",
 				"-m",
 				"PKCS8").Output()
