@@ -120,7 +120,7 @@ func GetPem(key string) ([]byte, error) {
 	block, r := pem.Decode(b.Bytes())
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
-			tmpKey, err := ioutil.TempFile("", "")
+			tmpKey, err := ioutil.TempFile("", "trimCR")
 			if err != nil {
 				log.Fatal(err)
 			}
