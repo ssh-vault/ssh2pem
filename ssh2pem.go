@@ -117,7 +117,6 @@ func GetPem(key string) ([]byte, error) {
 	// check if ssh key is the private key
 	// TODO find a way of doing this not depending on ssh-keygen
 	block, r := pem.Decode(b.Bytes())
-	fmt.Printf("len(r) = %+v\n", len(r))
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
 			tmpKey, err := ioutil.TempFile("", "trimCR")
