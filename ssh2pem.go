@@ -10,7 +10,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"math/big"
 	"os"
 	"os/exec"
@@ -101,7 +100,7 @@ func DecodePublicKey(str string) (interface{}, error) {
 func GetPem(key string) ([]byte, error) {
 	f, err := os.Open(key)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	defer f.Close()
 
@@ -118,18 +117,19 @@ func GetPem(key string) ([]byte, error) {
 	// check if ssh key is the private key
 	// TODO find a way of doing this not depending on ssh-keygen
 	block, r := pem.Decode(b.Bytes())
+	fmt.Printf("len(r) = %+v\n", len(r))
 	if len(r) == 0 {
 		if block.Type == "RSA PRIVATE KEY" {
 			tmpKey, err := ioutil.TempFile("", "trimCR")
 			if err != nil {
-				log.Fatal(err)
+				return nil, err
 			}
 			defer os.Remove(tmpKey.Name())
 			if _, err := tmpKey.Write(b.Bytes()); err != nil {
-				log.Fatal(err)
+				return nil, err
 			}
 			if err := tmpKey.Close(); err != nil {
-				log.Fatal(err)
+				return nil, err
 			}
 			out, err := exec.Command("ssh-keygen",
 				"-yf",
