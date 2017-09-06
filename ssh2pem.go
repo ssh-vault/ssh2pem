@@ -110,7 +110,7 @@ func GetPem(key string) ([]byte, error) {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		if len(bytes.TrimSpace(scanner.Bytes())) > 0 {
-			b.WriteString(fmt.Sprintf("%s\n", scanner.Text()))
+			b.WriteString(fmt.Sprintf("%s", scanner.Text()))
 		}
 	}
 
