@@ -118,7 +118,7 @@ func GetPem(key string) ([]byte, error) {
 	// TODO find a way of doing this not depending on ssh-keygen
 	block, r := pem.Decode(b.Bytes())
 	if len(r) == 0 {
-		if block.Type == "RSA PRIVATE KEY" {
+		if strings.HasSuffix(block.Type, "PRIVATE KEY") {
 			tmpKey, err := ioutil.TempFile("", "trimCR")
 			if err != nil {
 				return nil, err
